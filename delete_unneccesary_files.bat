@@ -1,0 +1,1 @@
+FOR /F "tokens=*" %%G IN ('DIR /B /AD /S x64') DO RMDIR /S /Q "%%G"
