@@ -1,7 +1,7 @@
 /*****************************************************************************
  * File:		Array.cpp
  * Author:		David Leather
- * Date:		2025-01-21
+ * Date:		2025-01-22
  * Purpose:		Source file for the Array class for Point class.
  *					- -m_size - size of array
  *					- +Size() - returns size of array
@@ -9,12 +9,16 @@
  *					- +GetElement()		- Gets element i
  *					- +operator []()	- Indexes array
  *
- * Version:		1.2
+ * Version:		1.4
  *
  * Change Log:
  * Version 1.0: 2025-01-19 - Initial implementation.
- * Version 1.1: 2025-01-19 - Added to DavidLeather::Containers namespace
+ * Version 1.1: 2025-01-19 - Added to DavidLeather::Containers namespace.
  * Version 1.2: 2025-01-21 - Made GetElement() const and validate index >= 0.
+ * Version 1.3: 2025-01-22 - Improved bounds checking for SetElement(),
+ *								GetElement(), and the index operator, [].
+ * Version 1.4: 2025-01-22 - Changed exception handling to throw
+ *								OutOfBoundException object instead of -1.
  *****************************************************************************/
 
 #include "Array.hpp"
@@ -91,10 +95,7 @@ namespace DavidLeather
 		CAD::Point& Array::operator [] (unsigned index)
 		{
 			// If index is out of range return first element.
-			if ((index >= m_size) || (index < 0))
-			{
-				return m_data[0];
-			}
+			if ((index >= m_size) || (index < 0)) throw OutOfBoundsException(index);
 
 			// Else return the proper element
 			return m_data[index];
@@ -104,10 +105,7 @@ namespace DavidLeather
 		CAD::Point& Array::operator [] (unsigned index) const
 		{
 			// If index is out of range return first element.
-			if ((index >= m_size) || (index < 0))
-			{
-				return m_data[0];
-			}
+			if ((index >= m_size) || (index < 0)) throw OutOfBoundsException(index);
 
 			// Else return the proper element
 			return m_data[index];
@@ -122,11 +120,8 @@ namespace DavidLeather
 		// Set an element
 		void Array::SetElement(unsigned i, const CAD::Point& pnt)
 		{
-			// If element is out of bounds escape
-			if ((i >= m_size) || (i < 0))
-			{
-				return;
-			}
+			// If element is out of bounds, throw exception.
+			if ((i >= m_size) || (i < 0)) throw OutOfBoundsException(i);
 
 			// Else, set the element
 			m_data[i] = pnt;
@@ -136,10 +131,7 @@ namespace DavidLeather
 		CAD::Point& Array::GetElement(unsigned i) const
 		{
 			// If OOB, return first element
-			if ((i >= m_size) || (i < 0))
-			{
-				return m_data[0];
-			}
+			if ((i >= m_size) || (i < 0)) throw OutOfBoundsException(i);
 
 			// Else, return ith element
 			return m_data[i];

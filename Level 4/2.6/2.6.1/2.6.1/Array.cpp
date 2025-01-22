@@ -91,7 +91,7 @@ namespace DavidLeather
 		CAD::Point& Array::operator [] (unsigned index)
 		{
 			// If index is out of range return first element.
-			if (index >= m_size)
+			if ((index >= m_size) || (index < 0))
 			{
 				return m_data[0];
 			}
@@ -104,7 +104,7 @@ namespace DavidLeather
 		CAD::Point& Array::operator [] (unsigned index) const
 		{
 			// If index is out of range return first element.
-			if (index >= m_size)
+			if ((index >= m_size) || (index < 0))
 			{
 				return m_data[0];
 			}
@@ -123,7 +123,7 @@ namespace DavidLeather
 		void Array::SetElement(unsigned i, const CAD::Point& pnt)
 		{
 			// If element is out of bounds escape
-			if (i >= m_size)
+			if ((i >= m_size) || (i < 0))
 			{
 				return;
 			}
@@ -136,7 +136,7 @@ namespace DavidLeather
 		CAD::Point& Array::GetElement(unsigned i) const
 		{
 			// If OOB, return first element
-			if ((i >= m_size) && (i >= 0))
+			if ((i >= m_size) || (i < 0))
 			{
 				return m_data[0];
 			}
