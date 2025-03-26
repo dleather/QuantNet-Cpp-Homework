@@ -1,13 +1,15 @@
 /***************************************************************************
  * File:		main_4_2b_4.cpp
  * Author:		David Leather
- * Date:		2025-03-24
+ * Date:		2025-03-26
  * Purpose:		Test the Stack<T> class.
  *
- * Version:		1.0
+ * Version:		1.1
  *
  * Change Log:
  * Version 1.0: 2025-03-24 - Initial implementation.
+ * Version 1.1: 2025-03-26 - Changed error handling to use ArrayException class.
+
  *****************************************************************************/
 #include "Stack.hpp"
 #include <iostream>
@@ -32,9 +34,9 @@ int main()
         cout << "Trying to push to a full stack..." << endl;
         stack.Push(40);
     }
-    catch (const StackException& e)
+    catch (const ArrayException& e)
     {
-        cout << "Exception caught: " << e.what() << endl;
+        cout << "Exception caught: " << e.GetMessage() << endl;
     }
 
     // Pop elements from the stack
@@ -49,9 +51,9 @@ int main()
         cout << "\nTrying to pop from an empty stack..." << endl;
         int value = stack.Pop();
     }
-    catch (const StackException& e)
+    catch (const ArrayException& e)
     {
-        cout << "Exception caught: " << e.what() << endl;
+        cout << "Exception caught: " << e.GetMessage() << endl;
     }
 
     return 0;

@@ -1,7 +1,7 @@
 /*****************************************************************************
  * File:		Array.cpp
  * Author:		David Leather
- * Date:		2025-03-24
+ * Date:		2025-03-26
  * Purpose:		Source file for the Array class for Point class.
  *					- -m_size - size of array
  *					- +Size() - returns size of array
@@ -9,7 +9,7 @@
  *					- +GetElement()		- Gets element i
  *					- +operator []()	- Indexes array
  *
- * Version:		1.5
+ * Version:		1.6
  *
  * Change Log:
  * Version 1.0: 2025-01-19 - Initial implementation.
@@ -20,50 +20,35 @@
  * Version 1.4: 2025-01-22 - Changed exception handling to throw
  *								OutOfBoundException object instead of -1.
  * Version 1.5: 2025-03-24 - Converted to template implementation.
+ * Version 1.6: 2025-03-26 - Changed constructors to use colon syntax.
+ *						   - Added definition for DefaultSize getter and setter.
+ *						   - Changed constructos to use static m_default_size
  *****************************************************************************/
 
-#ifndef Array_cpp
-#define Array_cpp
+#ifndef ARRAY_CPP
+#define ARRAY_CPP
 #include "Array.hpp"
 
 namespace DavidLeather
 {
 	namespace Containers
 	{
-		// Initialize default size (static member)
-		template<typename T>
-		unsigned int Array<T>::m_default_size = 10;
-
 		// Default constructor - creates 10 elements
 		template <typename T>
 		Array<T>::Array()
-		{
-			m_data = new T[m_default_size];		// Create array default size T objects
-			m_size = m_default_size;			// Size of array
-		}
+			: m_size(m_default_size), m_data(new T[m_default_size]) {}
 
 		// Constructor with size argument
 		template <typename T>
 		Array<T>::Array(unsigned size)
-		{
-			// If size is equal to 0 set it to default value of m_default_size.
-			if (size == 0)
-			{
-				size = m_default_size;
-			}
-
-			m_data = new T[size];			// Create an array of size Tobjects
-			m_size = size;					// Size of array
-		}
+			: m_size(size == 0 ? m_default_size : size), m_data(new T[m_size]) {}
 
 		// Copy constructor
 		template <typename T>
 		Array<T>::Array(const Array<T>& arr)
+			: m_size(arr.m_size), m_data(new T[arr.m_size])
 		{
-			m_size = arr.m_size;	// Set size
-
-			// Create new array and set each element individually
-			m_data = new T[m_size];
+			// Fill out array
 			for (unsigned i = 0; i < m_size; ++i)
 			{
 				m_data[i] = arr.m_data[i];
@@ -145,7 +130,7 @@ namespace DavidLeather
 
 		// Get element
 		template <typename T>
-		T& Array<T>::GetElement(unsigned i) const
+		const T& Array<T>::GetElement(unsigned i) const
 		{
 			// If OOB, return first element
 			if ((i >= m_size) || (i < 0)) throw OutOfBoundsException(i);
@@ -154,20 +139,20 @@ namespace DavidLeather
 			return m_data[i];
 		}
 
-		// Static function to get default size
+		// Getter for default size
 		template <typename T>
 		unsigned int Array<T>::DefaultSize()
 		{
 			return m_default_size;
 		}
 
-		// Static function to set default size
+		// Setting for default size
 		template <typename T>
 		void Array<T>::DefaultSize(unsigned int size)
 		{
-			// Sets to 10 if not greater than 0
-			m_default_size = (size > 0) ? size : 10;
+			m_default_size = size;
 		}
+
 	}
 }
 

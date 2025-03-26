@@ -1,7 +1,7 @@
 /*****************************************************************************
  * File:		Array.cpp
  * Author:		David Leather
- * Date:		2025-03-24
+ * Date:		2025-03-26
  * Purpose:		Source file for the Array class for Point class.
  *					- -m_size - size of array
  *					- +Size() - returns size of array
@@ -9,7 +9,7 @@
  *					- +GetElement()		- Gets element i
  *					- +operator []()	- Indexes array
  *
- * Version:		1.5
+ * Version:		1.6
  *
  * Change Log:
  * Version 1.0: 2025-01-19 - Initial implementation.
@@ -20,6 +20,7 @@
  * Version 1.4: 2025-01-22 - Changed exception handling to throw
  *								OutOfBoundException object instead of -1.
  * Version 1.5: 2025-03-24 - Converted to template implementation.
+ * Version 1.6: 2025-03-26 - Changed constructors to use colon syntax.
  *****************************************************************************/
 
 #ifndef Array_cpp
@@ -32,34 +33,19 @@ namespace DavidLeather
 	{
 		// Default constructor - creates 10 elements
 		template <typename T>
-		Array<T>::Array()
-		{
-			m_data = new T[10];				// Create array 10 Point objects
-			m_size = 10;					// Size of array
-		}
+		Array<T>::Array() : m_size(10), m_data(new T[10]) {}
 
 		// Constructor with size argument
 		template <typename T>
 		Array<T>::Array(unsigned size)
-		{
-			// If size is equal to 0 set it to default value of 10.
-			if (size == 0)
-			{
-				size = 10;
-			}
-
-			m_data = new T[size];			// Create an array of size Point objects
-			m_size = size;					// Size of array
-		}
+			: m_size(size == 0 ? 10 : size), m_data(new T[m_size]) {}
 
 		// Copy constructor
 		template <typename T>
 		Array<T>::Array(const Array<T>& arr)
+			: m_size(arr.m_size), m_data(new T[arr.m_size])
 		{
-			m_size = arr.m_size;	// Set size
-
-			// Create new array and set each element seperatelt
-			m_data = new T[m_size];
+			// Fill out array
 			for (unsigned i = 0; i < m_size; ++i)
 			{
 				m_data[i] = arr.m_data[i];

@@ -14,6 +14,8 @@
  *
  * Change Log:
  * Version 1.0: 2025-03-24 - Initial implementation.
+ * Version 1.1: 2025-03-36 - Removed error checking in Push() and Pop().
+ *								- Exceptions are handled by the Array superclass.
  *****************************************************************************/
 #ifndef STACK_CPP
 #define STACK_CPP
@@ -66,40 +68,16 @@ namespace DavidLeather
 		template <typename T>
 		void Stack<T>::Push(const T& element)
 		{
-			// Check if current index is valid
-			if (m_current >= m_stack.Size())
-			{
-				throw StackFullException();
-			}
-
-			unsigned curr_ndx = m_current;		// Store in case of exception
-			try
-			{
-				m_stack[m_current] = element;	// Assign to stack
-				m_current++;					// Increment
-			}
-			catch (...)
-			{
-				m_current = curr_ndx;			// Revert to old m_current value
-				throw;
-			}
+			m_stack[m_current] = element;
+			m_current++;
 		}
 
 		// Pop() - Returns the top element (and then (m_current)
 		template <typename T>
 		T Stack<T>::Pop()
 		{
-			unsigned curr_ndx = m_current;	// Current state in case of exception
-			m_current--;					// Decrement m_current
-			try
-			{
-				return m_stack[m_current];
-			}
-			catch (...)
-			{
-				m_current = curr_ndx;		// Reset m_current to initial value
-				throw StackException();
-			}
+			m_current--;				// Decrement first
+			return m_stack[m_current];
 		}
 	}
 }

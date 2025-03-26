@@ -1,13 +1,15 @@
 /***************************************************************************
  * File:		main_4_2b_2.cpp
  * Author:		David Leather
- * Date:		2025-03-24
+ * Date:		2025-03-26
  * Purpose:		Test the NumericArray<T> class.
  *
- * Version:		1.0
+ * Version:		1.1
  *
  * Change Log:
  * Version 1.0: 2025-03-24 - Initial implementation.
+ * Version 1.1: 2025-03-24 - Now explicitly catches ArrayException.
+
  *****************************************************************************/
 
 
@@ -72,8 +74,8 @@ int main() {
         double dotProduct = doubleArray1.DotProduct(doubleArray2);
         cout << "Dot product: " << dotProduct << endl;
     }
-    catch (const exception& e) {
-        cout << "Exception: " << e.what() << endl;
+    catch (const ArrayException& e) {
+        cout << "Exception: " << e.GetMessage() << endl;
     }
 
     // Test with different size arrays
@@ -82,8 +84,8 @@ int main() {
     try {
         NumericArray<double> sumArray = doubleArray1 + doubleArray3;
     }
-    catch (const exception& e) {
-        cout << "Exception caught: " << e.what() << endl;
+    catch (const ArrayException& e) {
+        cout << "Exception: " << e.GetMessage() << endl;
     }
 
     return 0;

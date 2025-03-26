@@ -24,7 +24,7 @@
 #ifndef NUMERICARRAY_CPP
 #define NUMERICARRAY_CPP
 #include "NumericArray.hpp"
-#include <stdexcept>
+#include <stdexcept>		// Include for std::invalid_argument
 
 
 namespace DavidLeather
@@ -111,7 +111,7 @@ namespace DavidLeather
 			}
 
 			// Intialize result
-			T result = T();
+			T result = T();	// Sets result to 0
 
 			// Compute sum_i a[i]*b[i]
 			for (unsigned i = 0; i < this->Size(); i++)

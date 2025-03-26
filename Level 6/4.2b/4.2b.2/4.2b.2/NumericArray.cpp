@@ -1,7 +1,7 @@
 /*****************************************************************************
  * File:		NumericArray.cpp
  * Author:		David Leather
- * Date:		2025-03-24
+ * Date:		2025-03-26
  * Purpose:		Source file for the NumericArray template class. Derived from Array.
  *				- Array Inherited:
  *					-m_data - array of data
@@ -15,10 +15,11 @@
  *					+operator *()
  *					+DotProduct()
  *
- * Version:		1.0
+ * Version:		1.1
  *
  * Change Log:
  * Version 1.0: 2025-03-24 - Initial implementation.
+ * Version 1.1: 2025-03-26 - Implemented SizeMismatchException().
  *****************************************************************************/
 
 #ifndef NUMERICARRAY_CPP
@@ -45,7 +46,7 @@ namespace DavidLeather
 
 		// Destructor
 		template <typename T>
-		NumericArray<T>::~NumericArray() {}	// Destructor of base class gets called last
+		NumericArray<T>::~NumericArray(){}	// Destructor of base class gets called last
 
 		// Assignment operator
 		template <typename T>
@@ -86,8 +87,7 @@ namespace DavidLeather
 			// Check for same dimensions
 			if (this->Size() != num_arr.Size())
 			{
-				std::string err_msg = "Dimension mismatch: Arrays must be of the same size";
-				throw std::invalid_argument(err_msg);
+				throw SizeMismatchException();
 			}
 
 			// Initalize new array
@@ -106,12 +106,11 @@ namespace DavidLeather
 			// Check for same dimensions
 			if (this->Size() != num_arr.Size())
 			{
-				std::string err_msg = "Dimension mismatch: Arrays must be of the same size";
-				throw std::invalid_argument(err_msg);
+				throw SizeMismatchException();
 			}
 
 			// Intialize result
-			T result = T();
+			T result = T();	// Sets result to 0
 
 			// Compute sum_i a[i]*b[i]
 			for (unsigned i = 0; i < this->Size(); i++)

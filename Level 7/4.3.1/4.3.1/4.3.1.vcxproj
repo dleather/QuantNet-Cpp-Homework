@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{e63d14b6-9933-441e-aa3b-5e080a9b99b7}</ProjectGuid>
-    <RootNamespace>My42b2</RootNamespace>
+    <ProjectGuid>{26e5bbdb-058b-48e9-823b-3ac5a5b82beb}</ProjectGuid>
+    <RootNamespace>My431</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -44,7 +44,6 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
-    <EnableASAN>true</EnableASAN>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -128,22 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Array.cpp" />
-    <ClCompile Include="Circle.cpp" />
-    <ClCompile Include="Line.cpp" />
-    <ClCompile Include="main_4_2b_2.cpp" />
-    <ClCompile Include="NumericArray.cpp" />
-    <ClCompile Include="Point.cpp" />
-    <ClCompile Include="Shape.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Array.hpp" />
-    <ClInclude Include="Circle.hpp" />
-    <ClInclude Include="DavidLeather.hpp" />
-    <ClInclude Include="Line.hpp" />
-    <ClInclude Include="NumericArray.hpp" />
-    <ClInclude Include="Point.hpp" />
-    <ClInclude Include="Shape.hpp" />
+    <ClCompile Include="main_4_3_1.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
