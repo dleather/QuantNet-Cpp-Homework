@@ -135,6 +135,7 @@
     <ClInclude Include="EuropeanCall.hpp" />
     <ClInclude Include="EuropeanOption.hpp" />
     <ClInclude Include="EuropeanPut.hpp" />
+    <ClInclude Include="MatrixPricer.hpp" />
     <ClInclude Include="NormalDistribution.hpp" />
     <ClInclude Include="OptionContract.hpp" />
   </ItemGroup>

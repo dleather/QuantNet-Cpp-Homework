@@ -1,7 +1,7 @@
 /**************************************************************************
  * File:        EuropeanOption.hpp
  * Author:      David Leather
- * Date:        2025-03-28
+ * Date:        2025-03-29
  * Purpose:     Header file for EuropeanOption class
  *					+ EuropeanOption(S, K, T, r, sig, b)
  *					+ price()
@@ -15,10 +15,11 @@
  *              4. Provides methods for Greeks calculations
  *              5. Implements put-call parity checks
  *
- * Version:     1.0
+ * Version:     1.1
  *
  * Change Log:
  * Version 1.0: 2025-03-28 - Initial implementation.
+ * Version 1.1: 2025-03-29 - Implemented put-call parity check and conversion.
  *****************************************************************************/
 
 #ifndef EUROPEAN_OPTION_HPP
@@ -82,6 +83,50 @@ public:
 		return d1() - this->sig() * sqrt(this->T());
 	}
 
+	// Calculate put price from call price using put-call parity
+	static NT callToPut(const EuropeanOption<NT>& call, NT C) {
+		NT S = call.S();
+		NT K = call.K();
+		NT T = call.T();
+		NT r = call.r();
+
+		return C + K * exp(-r * T) - S;
+	}
+
+	// Calculate call price from put price using put-call parity
+	static NT putToCall(const EuropeanOption<NT>& put, NT P) {
+		NT S = put.S();
+		NT K = put.K();
+		NT T = put.T();
+		NT r = put.r();
+
+		return P - K * exp(-r * T) + S;
+	}
+
+	// Put-call parity validation
+	static bool putCallParityCheck(
+		const EuropeanOption<NT>& call,	// EuropeanCallOption object
+		const EuropeanOption<NT>& put,	// EuropeanPutOption object
+		NT tol = 1e-5					// Numerical tolerance
+	) {
+		// Extract parameters
+		NT S = call.S();
+		NT K = call.K();
+		NT T = call.T();
+		NT r = call.r();
+
+		// Compute option prices
+		NT C = call.price();
+		NT P = put.price();
+
+		// Compute both sides of put-call parity
+		NT lhs = C + K * exp(-r * T);
+		NT rhs = P + S;
+
+		// Return boolean
+		return fabs(lhs - rhs) < tol;
+	}
+
 	// Greek calculations - common for both call and put options
 
 	// Gamma - second derivative of option price wrt the underlying
@@ -106,50 +151,6 @@ public:
 		NT d1val = d1();
 
 		return S * sqrt(T) * exp((b - r) * T) * n(d1val);
-	}*/
-
-	// Put-call parity validation
-	//static bool putCallParityCheck(
-	//	const EuropeanOption<NT>& call,	// EuropeanCallOption object
-	//	const EuropeanOption<NT>& put,	// EuropeanPutOption object
-	//	NT tol = 1e-10					// Numerical tolerance
-	//) {
-	//	// Extract parameters
-	//	NT S = call.S();
-	//	NT K = call.K();
-	//	NT T = call.T();
-	//	NT r = call.r();
-
-	//	// Compute option prices
-	//	NT C = call.price();
-	//	NT P = put.price();
-
-	//	// Compute both sides of put-call parity
-	//	NT lhs = C + K * exp(-r * T);
-	//	NT rhs = P + S;
-
-	//	// Return boolean
-	//	return fabs(lhs - rhs) < tol;
-	//}
-
-	// Calculate put price from call price using put-call parity
-	/*static NT putFromCall(const EuropeanOption<NT>& call, NT C) {
-		NT S = call.S();
-		NT K = call.K();
-		NT T = call.T();
-		NT r = call.r();S
-
-		return C + K * exp(-r * T) - S;
-	}*/
-
-	// Calculate call price from put price using put-call parity
-	/*static NT callFromPut(const EuropeanOption<NT>& put, NT P) {
-		NT S = put.S();
-		NT K = put.K();
-		NT T = put.T();
-		NT r = put.r();
-
-		return P - K * exp(-r * T) + S;
 	}*/
 
 	// Numerical approximation of delta using divided differences

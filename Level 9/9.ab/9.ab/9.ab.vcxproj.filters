@@ -53,5 +53,8 @@
     <ClInclude Include="EuropeanPut.hpp">
       <Filter>Header Files\options</Filter>
     </ClInclude>
+    <ClInclude Include="MatrixPricer.hpp">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
