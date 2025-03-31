@@ -1,7 +1,7 @@
 /**************************************************************************
  * File:        EuropeanOption.hpp
  * Author:      David Leather
- * Date:        2025-03-29
+ * Date:        2025-03-31
  * Purpose:     Header file for EuropeanOption class
  *					+ EuropeanOption(S, K, T, r, sig, b)
  *					+ price()
@@ -15,11 +15,12 @@
  *              4. Provides methods for Greeks calculations
  *              5. Implements put-call parity checks
  *
- * Version:     1.1
+ * Version:     1.2
  *
  * Change Log:
  * Version 1.0: 2025-03-28 - Initial implementation.
  * Version 1.1: 2025-03-29 - Implemented put-call parity check and conversion.
+ * Version 1.2: 2025-03-31 - Implemented Gamma an Vega formulas
  *****************************************************************************/
 
 #ifndef EUROPEAN_OPTION_HPP
@@ -130,28 +131,27 @@ public:
 	// Greek calculations - common for both call and put options
 
 	// Gamma - second derivative of option price wrt the underlying
-	/*NT gamma() const {
-		NT S = this->S();
-		NT T = this->T();
-		NT sig = this->sig();
-		NT b = this->b();
-		NT r = this->r();
+	NT gamma() const {
+		NT S = this->getS();
+		NT T = this->getT();
+		NT sig = this->getSig();
+		NT b = this->getB();
+		NT r = this->getR();
 		NT d1_val = d1();
 
-		return n(d1val) * exp((b - r) * T) / (S * sig * sqrt(T));
-	}*/
+		return n(d1_val) * exp((b - r) * T) / (S * sig * sqrt(T));
+	}
 
 	// Vega - derivative of option price wrt volatility
-	/*NT vega() const {
-		NT S = this->S();
-		NT T = this->T();
-		NT b = this->b();
-		NT r = this->r();
+	NT vega() const {
+		NT S = this->getS();
+		NT T = this->getT();
+		NT b = this->getB();
+		NT r = this->getR();
+		NT d1_val = d1();
 
-		NT d1val = d1();
-
-		return S * sqrt(T) * exp((b - r) * T) * n(d1val);
-	}*/
+		return S * sqrt(T) * exp((b - r) * T) * n(d1_val);
+	}
 
 	// Numerical approximation of delta using divided differences
 	//NT dividedDiffDelta(NT h = 0.001) const {

@@ -1,7 +1,7 @@
 /**************************************************************************
  * File:        EuropeanCall.hpp
  * Author:      David Leather
- * Date:        2025-03-28
+ * Date:        2025-03-31
  * Purpose:     Header file for EuropeanCall class
  *              Represents a European call option contract.
  *              Implements specific pricing for call options.
@@ -10,10 +10,11 @@
  *              2. Implements Price() for call options
  *              3. Implements call-specific Greeks (delta, theta)
  *
- * Version:     1.0
+ * Version:     1.1
  *
  * Change Log:
  * Version 1.0: 2025-03-28 - Initial implementation.
+ * Version 1.1: 2025-03-31 - Added delta() and theta() functions.
  *****************************************************************************/
 
 #ifndef EUROPEAN_CALL_HPP
@@ -63,6 +64,34 @@ public:
 	virtual boost::shared_ptr<EuropeanOption<NT>> clone() const override
 	{
 		return boost::make_shared<EuropeanCall<NT>> (*this);
+	}
+
+	// Greek calculations - Specific to European Call
+	
+	// Delta - derivative of option
+	NT delta() const {
+		NT T = this->getT();
+		NT b = this->getB();
+		NT r = this->getR();
+		NT d1_val = d1();
+
+		return N(d1_val) * exp((b - r) * T);
+	}
+
+	// Theta - negative of derivative of call price wrt to time
+	NT theta() const {
+		NT S = this->getS();
+		NT T = this->getT();
+		NT sig = this->getSig();
+		NT b = this->getB();
+		NT r = this->getR();
+		NT K = this->getK();
+		NT d1_val = d1();
+		NT d2_val = d2();
+
+		return -((S * sig * exp((b - r) * T) * n(d1_val)) / (2.0 * sqrt(T)))
+			- (b - r) * S * exp((b - r) * T) * N(d1_val) - r * K * exp(-r * T)
+			* N(d2_val);
 	}
 };
 
