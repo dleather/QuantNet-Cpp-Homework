@@ -68,37 +68,37 @@ public:
 
 	// Calculate d1 parameter from Black-Scholes formula
 	NT d1() const {
-		NT S = this->S();
-		NT K = this->K();
-		NT T = this->T();
-		NT r = this->r();
-		NT sig = this->sig();
-		NT b = this->b();
+		NT S = this->getS();
+		NT K = this->getK();
+		NT T = this->getT();
+		NT r = this->getR();
+		NT sig = this->getSig();
+		NT b = this->getB();
 
 		return (log(S / K) + (b + 0.5 * sig * sig) * T) / (sig * sqrt(T));
 	}
 
 	// Calculate d2 parameter from Black-Scholes formula
 	NT d2() const {
-		return d1() - this->sig() * sqrt(this->T());
+		return d1() - this->getSig() * sqrt(this->getT());
 	}
 
 	// Calculate put price from call price using put-call parity
 	static NT callToPut(const EuropeanOption<NT>& call, NT C) {
-		NT S = call.S();
-		NT K = call.K();
-		NT T = call.T();
-		NT r = call.r();
+		NT S = call.getS();
+		NT K = call.getK();
+		NT T = call.getT();
+		NT r = call.getR();
 
 		return C + K * exp(-r * T) - S;
 	}
 
 	// Calculate call price from put price using put-call parity
 	static NT putToCall(const EuropeanOption<NT>& put, NT P) {
-		NT S = put.S();
-		NT K = put.K();
-		NT T = put.T();
-		NT r = put.r();
+		NT S = put.getS();
+		NT K = put.getK();
+		NT T = put.getT();
+		NT r = put.getR();
 
 		return P - K * exp(-r * T) + S;
 	}
@@ -110,10 +110,10 @@ public:
 		NT tol = 1e-5					// Numerical tolerance
 	) {
 		// Extract parameters
-		NT S = call.S();
-		NT K = call.K();
-		NT T = call.T();
-		NT r = call.r();
+		NT S = call.getS();
+		NT K = call.getK();
+		NT T = call.getT();
+		NT r = call.getR();
 
 		// Compute option prices
 		NT C = call.price();

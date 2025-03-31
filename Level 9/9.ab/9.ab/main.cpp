@@ -35,6 +35,8 @@
 #include "EuropeanCall.hpp"
 #include <boost/tuple/tuple.hpp>
 #include <boost/tuple/tuple_io.hpp>
+#include <boost/function.hpp>
+#include <boost/bind.hpp>
 #include <vector>
 #include "MatrixPricer.hpp"
 
@@ -146,17 +148,23 @@ int main()
 		std::cout << "\n";
 
 		// Test priceMatrix() - S = {1,...,10} and T = {1, ..., 10}
-		S0 = 1; S1 = 10;
-		double T0 = 1; double T1 = 10;
-		MeshGenerator<double> mesh_S(S0, S1, h);
-		MeshGenerator<double> mesh_T(S0, S1, h);
+		S0 = 1; S1 = 10;					// Upper and lower bounds for S grid
+		double T0 = 1; double T1 = 10;		// Upper and lower bounds for T grid
+		MeshGenerator<double> mesh_S(S0, S1, h);	// Mesh grid for S
+		MeshGenerator<double> mesh_T(T0, T1, h);	// Mesh grid for T
+		// Function object for 1st setter
+		boost::function<void(EuropeanPut<double>&, double)> setS_func =
+			boost::bind(&EuropeanPut<double>::setS, _1, _2);
+		// Function object for second setter
+		boost::function<void(EuropeanPut<double>&, double)> setT_func =
+			boost::bind(&EuropeanPut<double>::setT, _1, _2);
 		std::vector<std::vector<double>> price_matrix =
 			MatrixPricer::priceMatrix(
 				put,
 				mesh_S,
 				mesh_T,
-				static_cast<void (EuropeanPut<double>::*)(double)>(&EuropeanPut<double>::S),
-				static_cast<void (EuropeanPut<double>::*)(double)>(&EuropeanPut<double>::T)
+				setS_func,
+				setT_func
 			);
 		std::cout << "Price Matrix (rows = S, columns = T):\n";
 		for (std::size_t i = 0; i < price_matrix.size(); ++i) {

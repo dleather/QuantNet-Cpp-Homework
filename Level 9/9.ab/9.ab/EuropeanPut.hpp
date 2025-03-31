@@ -45,11 +45,11 @@ public:
 	NT price() const override
 	{
 		// Initialize parameters
-		NT S = this->S();
-		NT K = this->K();
-		NT T = this->T();
-		NT r = this->r();
-		NT b = this->b();
+		NT S = this->getS();
+		NT K = this->getK();
+		NT T = this->getT();
+		NT r = this->getR();
+		NT b = this->getB();
 
 		// Compute d1 and d2
 		NT d1 = this->d1();

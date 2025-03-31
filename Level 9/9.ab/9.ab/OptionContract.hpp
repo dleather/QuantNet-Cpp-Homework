@@ -78,36 +78,36 @@ public:
 	virtual NT price() const = 0;	// PMVF to compute price of subtypes
 
 	// Getters
-	NT S() const { return m_S; };
-	NT K() const { return m_K; };
-	NT T() const { return m_T; };
-	NT r() const { return m_r; };
-	NT sig() const { return m_sig; };
-	NT b() const { return m_b; };
+	NT getS() const { return m_S; };
+	NT getK() const { return m_K; };
+	NT getT() const { return m_T; };
+	NT getR() const { return m_r; };
+	NT getSig() const { return m_sig; };
+	NT getB() const { return m_b; };
 
 	// Setters
-	inline void S(NT input)
+	inline void setS(NT input)
 	{
 		if (input <= 0) throw std::invalid_argument("Underlying price must be positive");
 		m_S = input;
 	}
-	inline void K(NT input)
+	inline void setK(NT input)
 	{
 		if (input <= 0) throw std::invalid_argument("Strike price must be positive");
 		m_K = input;
 	}
-	inline void T(NT input)
+	inline void setT(NT input)
 	{
 		if (input < 0) throw std::invalid_argument("Time-to-expiry must be non-negative");
 		m_T = input;
 	}
-	inline void r(NT input) { m_r = input; }
-	inline void sig(NT input)
+	inline void setR(NT input) { m_r = input; }
+	inline void setSig(NT input)
 	{
 		if (input < 0) throw std::invalid_argument("Std. dev. must be non-negative");
 		m_sig = input;
 	}
-	inline void b(NT input) { m_b = input; }
+	inline void setB(NT input) { m_b = input; }
 	inline void setParameters(NT S, NT K, NT T, NT r, NT sig, NT b = 0)
 	{
 		// Validation check

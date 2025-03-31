@@ -22,6 +22,8 @@
 #define MATRIX_PRICER_HPP
 
 #include <vector>
+#include <boost/function.hpp>
+#include <boost/bind.hpp>
 #include "OptionContract.hpp"
 
 // Class to represent a parameter range for batch pricing
@@ -103,7 +105,7 @@ public:
 
 		for (NT s = S0; s <= S1; s += h) {
 			OptionType optionCopy = option;		// Create a copy
-			optionCopy.S(s);					// Update S
+			optionCopy.setS(s);					// Update S
 			prices.push_back(optionCopy.price());
 		}
 
@@ -116,8 +118,8 @@ public:
 		const OptionType& option,	// EuropeanCall, EuropeanPut, etc...
 		MeshGenerator<NT>& param1,	// 1D Grid for 1st dimension, i.e. S
 		MeshGenerator<NT>& param2,	// 1D grid for 2nd dimension, i.e. T
-		void (OptionType::* setter1)(NT),		// Function pointer to 1st dimension setter
-		void (OptionType::*setter2)(NT)		// Function pointer to 2nd dimension setter
+		boost::function<void(OptionType&, NT)> setter1,  // Function object for 1st parameter
+		boost::function<void(OptionType&, NT)> setter2   // Function object for 2nd parameter
 	) {
 		// Initialize matrix
 		std::vector<std::vector<NT>> matrix;
@@ -132,8 +134,8 @@ public:
 			// Loop over second dimension
 			for (unsigned j = 0; j < param2.size(); ++j) {
 				OptionType optionCopy = option;		// Create a copy
-				(optionCopy.*setter1)(param1[i]);	// Set first parameter
-				(optionCopy.*setter2)(param2[j]);	// Set second parameter
+				setter1(optionCopy, param1[i]);		// Set first parameter
+				setter2(optionCopy, param2[j]);		// Set second parameter
 				row.push_back(optionCopy.price());
 			}
 
