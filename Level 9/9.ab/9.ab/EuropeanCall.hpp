@@ -24,6 +24,7 @@
 #include "EuropeanOption.hpp"
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
+#include "NormalDistribution.hpp"
 
 template<typename NT = double>
 class EuropeanCall : public EuropeanOption<NT> {
@@ -73,9 +74,9 @@ public:
 		NT T = this->getT();
 		NT b = this->getB();
 		NT r = this->getR();
-		NT d1_val = d1();
+		NT d1_val = this->d1();
 
-		return N(d1_val) * exp((b - r) * T);
+		return this->N(d1_val) * exp((b - r) * T);
 	}
 
 	// Theta - negative of derivative of call price wrt to time
@@ -86,12 +87,12 @@ public:
 		NT b = this->getB();
 		NT r = this->getR();
 		NT K = this->getK();
-		NT d1_val = d1();
-		NT d2_val = d2();
+		NT d1_val = this->d1();
+		NT d2_val = this->d2();
 
-		return -((S * sig * exp((b - r) * T) * n(d1_val)) / (2.0 * sqrt(T)))
-			- (b - r) * S * exp((b - r) * T) * N(d1_val) - r * K * exp(-r * T)
-			* N(d2_val);
+		return -((S * sig * exp((b - r) * T) * this->n(d1_val)) / (2.0 * sqrt(T)))
+			- (b - r) * S * exp((b - r) * T) * this->N(d1_val) - r * K * exp(-r * T)
+			* this->N(d2_val);
 	}
 };
 

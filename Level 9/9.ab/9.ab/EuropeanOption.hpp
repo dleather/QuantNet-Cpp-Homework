@@ -15,12 +15,13 @@
  *              4. Provides methods for Greeks calculations
  *              5. Implements put-call parity checks
  *
- * Version:     1.2
+ * Version:     1.3
  *
  * Change Log:
  * Version 1.0: 2025-03-28 - Initial implementation.
  * Version 1.1: 2025-03-29 - Implemented put-call parity check and conversion.
  * Version 1.2: 2025-03-31 - Implemented Gamma an Vega formulas
+ * Version 1.2: 2025-03-31 - Implemented divided difference methods.
  *****************************************************************************/
 
 #ifndef EUROPEAN_OPTION_HPP
@@ -154,50 +155,41 @@ public:
 	}
 
 	// Numerical approximation of delta using divided differences
-	//NT dividedDiffDelta(NT h = 0.001) const {
-	//	// Create copies with slightly modified S
-	//	EuropeanOption<NT>* plusH = this->clone();
-	//	plusH->S(this->S() + h);
+	NT ddDelta(NT h = 0.001) const {
+		// Create copies with slightly modified S
+		boost::shared_ptr<EuropeanOption<NT>> plush = this->clone();
+		plush->setS(this->getS() + h);
 
-	//	EuropeanOption<NT>* minusH = this->clone();
-	//	minusH->S(this->S() - h);
+		boost::shared_ptr<EuropeanOption<NT>> minush = this->clone();
+		minush->setS(this->getS() - h);
 
-	//	// Calculate price at S+h and S-h
-	//	NT pricePlusH = plusH->Price();
-	//	NT priceMinusH = minusH->Price();
+		// Calculate price at S+h and S-h
+		NT price_plush = plush->price();
+		NT price_minush = minush->price();
 
-	//	// Clean up
-	//	delete plusH;
-	//	delete minusH;
+		// Return approximation of first derivative
+		return (price_plush - price_minush) / (2.0 * h);
+	}
 
-	//	// Return approximation of first derivative
-	//	return (pricePlusH - priceMinusH) / (2 * h);
-	//}
+	// Numerical approximation of gamma using divided differences
+	NT ddGamma(NT h = 0.001) const {
+		// Create copies with modified S
+		boost::shared_ptr<EuropeanOption<NT>> center = this->clone();
 
-	//// Numerical approximation of gamma using divided differences
-	//NT dividedDiffGamma(NT h = 0.001) const {
-	//	// Create copies with modified S
-	//	EuropeanOption<NT>* center = this->clone();
+		boost::shared_ptr<EuropeanOption<NT>> plush = this->clone();
+		plush->setS(this->getS() + h);
 
-	//	EuropeanOption<NT>* plusH = this->clone();
-	//	plusH->S(this->S() + h);
+		boost::shared_ptr<EuropeanOption<NT>> minush = this->clone();
+		minush->setS(this->getS() - h);
 
-	//	EuropeanOption<NT>* minusH = this->clone();
-	//	minusH->S(this->S() - h);
+		// Calculate prices
+		NT price_center = center->price();
+		NT price_plush = plush->price();
+		NT price_minush = minush->price();
 
-	//	// Calculate prices
-	//	NT priceCenter = center->Price();
-	//	NT pricePlusH = plusH->Price();
-	//	NT priceMinusH = minusH->Price();
-
-	//	// Clean up
-	//	delete center;
-	//	delete plusH;
-	//	delete minusH;
-
-	//	// Return approximation of second derivative
-	//	return (pricePlusH - 2 * priceCenter + priceMinusH) / (h * h);
-	//}
+		// Return approximation of second derivative
+		return (price_plush - 2.0 * price_center + price_minush) / (h * h);
+	}
 
 	// Virtual clone method for making copies in derived classes
 	virtual boost::shared_ptr<EuropeanOption<NT>> clone() const = 0;

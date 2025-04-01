@@ -98,7 +98,8 @@ public:
 		const OptionType& option,
 		NT S0,	// Start price
 		NT S1,	// End price
-		NT h	// Step-size
+		NT h,	// Step-size
+		boost::function<NT(const OptionType&)> func
 	) {
 		std::vector<NT> prices;
 		prices.reserve(static_cast<unsigned>((S1 - S0) / h) + 1);
@@ -106,7 +107,7 @@ public:
 		for (NT s = S0; s <= S1; s += h) {
 			OptionType optionCopy = option;		// Create a copy
 			optionCopy.setS(s);					// Update S
-			prices.push_back(optionCopy.price());
+			prices.push_back(func(optionCopy));
 		}
 
 		return prices;
