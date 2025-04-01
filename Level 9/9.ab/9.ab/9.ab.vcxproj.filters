@@ -36,6 +36,9 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PerpetualAmericanPut.hpp">
+      <Filter>Header Files\options</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="OptionContract.hpp">
@@ -55,6 +58,12 @@
     </ClInclude>
     <ClInclude Include="MatrixPricer.hpp">
       <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="PerpetualAmericanOption.hpp">
+      <Filter>Header Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="PerpetualAmericanCall.hpp">
+      <Filter>Header Files\options</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

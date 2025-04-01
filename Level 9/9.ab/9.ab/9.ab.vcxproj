@@ -130,14 +130,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="PerpetualAmericanPut.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="PerpetualAmericanOption.hpp" />
     <ClInclude Include="EuropeanCall.hpp" />
     <ClInclude Include="EuropeanOption.hpp" />
     <ClInclude Include="EuropeanPut.hpp" />
     <ClInclude Include="MatrixPricer.hpp" />
     <ClInclude Include="NormalDistribution.hpp" />
     <ClInclude Include="OptionContract.hpp" />
+    <ClInclude Include="PerpetualAmericanCall.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

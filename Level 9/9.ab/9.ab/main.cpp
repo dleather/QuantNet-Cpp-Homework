@@ -1,30 +1,17 @@
 /**************************************************************************
  * File:        main.cpp
  * Author:      David Leather
- * Date:        2025-03-29
+ * Date:        2025-04-01
  * Purpose:     Fully test each and every aspect of your option pricing classes,
  *				to ensure correctness prior to submission. And answer the following...
- * 
- *				Part A:
- *					1. Exact Solution for One-Factor Plain Options
- *						a. Implement formulas for pricing european puts and calls.
- *						b. Add conversion from put-to-call and vice-versa using
- *							put-call parity. As well as a validation checker for 
- *							put-call parity.
- *						c. Write a global function that produces a mesh array
- *							of doubles seperated by a mesh size `h`
- *						d. Extend (c) to be able to compute option prices as a
- *							any of the option parameters. The purpose is to
- *							input a matrix of option parameters and receive a
- *							matrix of option prices as the result. Encapsulate
- *							this functionality in the most flexible/robust way
- *							you can think of.
  *
- * Version:     1.1
+ * Version:     1.3
  *
  * Change Log:
  * Version 1.0: 2025-03-28 - Initial implementation.
  * Version 1.1: 2025-03-29 - Solved A.1.b and A.1.c.
+ * Version 1.2: 2025-04-01 - Finished though Greeks.
+ * Version 1.3: 2025-04-01 - Finished though Perpetual American Options.
  *****************************************************************************/
 
 #include <cmath>
@@ -36,14 +23,14 @@
 #include "EuropeanCall.hpp"
 #include <boost/tuple/tuple.hpp>
 #include <boost/tuple/tuple_io.hpp>
-#include <boost/function.hpp>
-#include <boost/bind/bind.hpp>
 #include <vector>
 #include "MatrixPricer.hpp"
+#include "PerpetualAmericanOption.hpp"
+#include "PerpetualAmericanCall.hpp"
+#include "PerpetualAmericanPut.hpp"
 
 // Script parameters
 double tol = 0.0001;	// 1e-04
-
 
 int main()
 {
@@ -52,7 +39,7 @@ int main()
 	std::cout << "-----------------------------------------------\n\n";
 
 	std::cout << "-----------------------------------------------\n";
-	std::cout << "---   Part A1: Closed-form Prices   -----------\n";
+	std::cout << "---   Part A1: Eurpean Call/Put Prices   -----------\n";
 	std::cout << "-----------------------------------------------\n\n";
 
 	// Create an alias for each batch instance
@@ -151,11 +138,8 @@ int main()
 	std::cout << "-----------------------------------------------\n";
 	std::cout << "Testing Range Pricer\n";
 	std::cout << "-----------------------------------------------\n\n";
-	// Set price functor
-	boost::function<double(const EuropeanPut<double>&)> price_func =
-		boost::bind(&EuropeanPut<double>::price, _1);
 	// Set underlying price range
-	std::vector<double> prices = MatrixPricer::priceRange(put, S0, S1, h, price_func);
+	std::vector<double> prices = MatrixPricer::priceRange(put, S0, S1, h);
 	std::cout << "Prices: ";
 	for (it = prices.begin(); it != prices.end(); ++it)
 	{
@@ -167,23 +151,17 @@ int main()
 	std::cout << "-----------------------------------------------\n";
 	std::cout << "Testing Matrix Pricer\n";
 	std::cout << "-----------------------------------------------\n\n";
-	S0 = 1; S1 = 10;					// Upper and lower bounds for S grid
-	double T0 = 1; double T1 = 10;		// Upper and lower bounds for T grid
+	S0 = 1; S1 = 10;							// Upper and lower bounds for S grid
+	double T0 = 1; double T1 = 10;				// Upper and lower bounds for T grid
 	MeshGenerator<double> mesh_S(S0, S1, h);	// Mesh grid for S
 	MeshGenerator<double> mesh_T(T0, T1, h);	// Mesh grid for T
-	// Function object for 1st setter
-	boost::function<void(EuropeanPut<double>&, double)> setS_func =
-		boost::bind(&EuropeanPut<double>::setS, _1, _2);
-	// Function object for second setter
-	boost::function<void(EuropeanPut<double>&, double)> setT_func =
-		boost::bind(&EuropeanPut<double>::setT, _1, _2);
 	std::vector<std::vector<double>> price_matrix =
 		MatrixPricer::priceMatrix(
 			put,
 			mesh_S,
 			mesh_T,
-			setS_func,
-			setT_func
+			MatrixPricer::setSFunctor<EuropeanPut<double>>(),
+			MatrixPricer::setTFunctor<EuropeanPut<double>>()
 		);
 	std::cout << "Price Matrix (rows = S, columns = T):\n";
 	for (std::size_t i = 0; i < price_matrix.size(); ++i) {
@@ -228,10 +206,15 @@ int main()
 	std::cout << "Pass delta comparison? " << (delta_check ? "Yes!\n" : "No\n\n");
 
 	std::cout << "Computing the Delta for call for S: 10, 11,..., 50:\n";
-	boost::function<double(const EuropeanCall<double>&)> delta_func =
-		boost::bind(&EuropeanCall<double>::delta, _1);
 	std::vector<double> deltas;
-	deltas = MatrixPricer::priceRange(fcall, 10.0, 50.0, 1.0, delta_func);
+	deltas =
+		MatrixPricer::priceRange(
+			fcall,
+			10.0,
+			50.0,
+			1.0,
+			MatrixPricer::deltaFunctor<EuropeanCall<double>>()
+		);
 	std::cout << "|    S    |  Deltas | << \n";
 	std::cout << "---------------------\n";
 	for (int i = 0; i < deltas.size(); ++i)
@@ -240,15 +223,37 @@ int main()
 	}
 	std::cout << "---------------------\n\n";
 
+	std::cout << "Computing the Delta for call for S: 10, 11,..., 50:\n";
+	std::vector<double> gammas;
+	gammas =
+		MatrixPricer::priceRange(
+			fcall,
+			10.0,
+			50.0,
+			1.0,
+			MatrixPricer::gammaFunctor<EuropeanCall<double>>()
+		);
+	std::cout << "|    S    |  Gamma | << \n";
+	std::cout << "---------------------\n";
+	for (int i = 0; i < gammas.size(); ++i)
+	{
+		std::cout << "| " << 10.0 + i << " | " << gammas[i] << " |\n";
+	}
+
 	std::cout << "Using MatrixPricer to output matrix of Gammas over\n";
 	std::cout << " a grid of S = 90,91,100. And K = 100, 101, ..., 110\n\n";
 	mesh_S = MeshGenerator<double>(90.0, 100.0, 1.0);
 	MeshGenerator<double> mesh_K = MeshGenerator<double>(100.0, 110.0, 1.0);
-	boost::function<void(EuropeanCall<double>&, double)> setK_func =
-		boost::bind(&EuropeanCall<double>::setK, _1, _2);
-	boost::function<void(EuropeanCall<double>&, double)> setS2_func = boost::bind(&EuropeanCall<double>::setS, _1, _2);
 	std::vector<std::vector<double>> delta_matrix;	// Initalize matrix
-	delta_matrix = MatrixPricer::priceMatrix(fcall, mesh_S, mesh_K, setS2_func, setK_func);
+	delta_matrix =
+		MatrixPricer::priceMatrix(
+			fcall,
+			mesh_S,
+			mesh_K,
+			MatrixPricer::setSFunctor<EuropeanCall<double>>(),
+			MatrixPricer::setKFunctor<EuropeanCall<double>>(),
+			MatrixPricer::deltaFunctor<EuropeanCall<double>>()
+		);
 	std::cout << "Delta Matrix (rows = S, columns = K):\n";
 	for (std::size_t i = 0; i < delta_matrix.size(); ++i) {
 		for (std::size_t j = 0; j < delta_matrix[i].size(); ++j) {
@@ -276,7 +281,7 @@ int main()
 	std::cout << "Pass delta comparison? " << (delta_check ? "Yes!\n" : "No\n\n");
 
 	std::cout << "Ok, that worked. Now let's show the abs. error from h = 10^16\n";
-	std::cout << ", 10^15, ... , 10\^1 for Delta and Gamma.\n";
+	std::cout << ", 10^15, ... , 10^1 for Delta and Gamma.\n";
 	// Initalize loop variables
 	double put_delta_err; double put_gamma_err;
 	double call_delta_err; double call_gamma_err;
@@ -321,15 +326,20 @@ int main()
 	std::cout << "Optimal h is around 1e-3.\n\n";
 
 	std::cout << "Now lets retry A2.b, and compute the abs error for the range\n";
-	std::cout << "of deltas....";
+	std::cout << "of deltas....\n\n";
 	// Initalize vector of dd deltas and corresponding functor
 	std::vector<double> dddeltas;
-	boost::function<double(const EuropeanOption<double>&)> dddelta_func =
-		boost::bind(&EuropeanOption<double>::ddDelta, _1);
-	dddeltas = MatrixPricer::priceRange(fcall, 10.0, 50.0, 1.0, dddelta_func);
+	dddeltas =
+		MatrixPricer::priceRange(
+			fcall,
+			10.0,
+			50.0,
+			1.0,
+			MatrixPricer::ddDeltaFunctor<EuropeanCall<double>>()
+		);
 	std::vector<double> abs_errs2(dddeltas.size());
 	std::cout << "----------    Delta Pricer ---------\n";
-	std::cout << "|    S    |  Closed-Form  |  Divided-Diff  |  abs. err.  |<< \n";
+	std::cout << "|  S   | Closed-Form | Divided-Diff | abs. err. |<< \n";
 	std::cout << "---------------------\n";
 	double mean_abs_err = 0.0;
 	double abs_err;
@@ -341,8 +351,146 @@ int main()
 		std::cout << dddeltas[i] << "  |  " << abs_err  << "  |\n";
 	}
 	mean_abs_err /= dddeltas.size();
-	std::cout << "mean abs err: " << mean_abs_err;
-	std::cout << "---------------------\n\n";
+	std::cout << "------- mean abs err: " << mean_abs_err;
+	std::cout << " --------------\n\n";
+
+	std::cout << "Now for h = 1e-16 to 1e-1 i will loop and compute the \n";
+	std::cout << "mean abs error for delta and gamma across all S.\n\n";
+
+	
+	// Matrix storing delta_mae, gamma_mae	
+	std::vector<std::vector<double>> maes(16, std::vector<double>(2));
+	std::vector<double> ddgammas(dddeltas.size());	// Vector to store gammas
+	double mae_gamma = 0.0;	// placeholder for mae comptuation of gamma
+	double mae_delta = 0.0;	// placeholder for mae computation of delta
+	h = pow(10, -16);
+	for (unsigned i = 0; i < 16; ++i)
+	{
+		// Reset MAE accumulators for this step size
+		mae_gamma = 0.0;
+		mae_delta = 0.0;
+
+		// Compute divided-diff deltas
+		dddeltas =
+			MatrixPricer::priceRange(
+				fcall,
+				10.0,
+				50.0,
+				1.0,
+				MatrixPricer::ddDeltaFunctor<EuropeanCall<double>>(h)
+			);
+		// Compute divided-diff gammas
+		ddgammas =
+			MatrixPricer::priceRange(
+				fcall,
+				10.0,
+				50.0,
+				1.0,
+				MatrixPricer::ddGammaFunctor<EuropeanCall<double>>(h)
+			);
+		// Compute mae for both
+		for (unsigned j = 0; j < dddeltas.size(); ++j)
+		{
+			mae_delta += fabs(dddeltas[j] - deltas[j]);  // Use absolute error
+			mae_gamma += fabs(ddgammas[j] - gammas[j]);  // Use absolute error
+		}
+		// Calculate mean by dividing by the number of points
+		mae_delta /= dddeltas.size();
+		mae_gamma /= ddgammas.size();
+
+		// Push results
+		maes[i][0] = mae_delta;
+		maes[i][1] = mae_gamma;
+
+		// Print results for this step size
+		std::cout << "h = " << h << ": Delta MAE = " << mae_delta
+			<< ", Gamma MAE = " << mae_gamma << std::endl;
+
+		// Increment h (multiply by 10 for each iteration)
+		h *= 10.0;
+	}
+
+	// Print summary after the loop
+	std::cout << "\nSummary of Mean Absolute Errors:\n";
+	std::cout << "----------------------------------\n";
+	std::cout << "| Step Size (h) | Delta MAE | Gamma MAE |\n";
+	std::cout << "----------------------------------\n";
+
+	// Reset h for reporting
+	h = pow(10, -16);
+	for (unsigned i = 0; i < 16; ++i) {
+		std::cout << "| 1e" << std::setw(3) << log10(h) << " | "
+			<< std::setw(9) << std::scientific << std::setprecision(3) << maes[i][0] << " | "
+			<< std::setw(9) << std::scientific << std::setprecision(3) << maes[i][1] << " |\n";
+		h *= 10.0;
+	}
+	std::cout << "----------------------------------\n";
+
+	std::cout << "-----------------------------------------------\n";
+	std::cout << "----  Part B: Perpetual American Options   ----\n";
+	std::cout << "-----------------------------------------------\n\n";
+	
+	std::cout << "Testing with pricing on the following: \n";
+	std::cout << "K = 100, sig = 0.1, r = 0.1, b = 0.02, S = 100\n";
+	PerpetualAmericanCall<double> pa_call;
+	PerpetualAmericanPut<double> pa_put;
+	pa_call =
+		PerpetualAmericanCall<double>::PerpetualAmericanCall(
+			110.0,	// S
+			100.0,	// K
+			0.1,	// r
+			0.1,	// sig
+			0.02	// b
+		);
+	pa_put =
+		PerpetualAmericanPut<double>::PerpetualAmericanPut(
+			110.0,	// S
+			100.0,	// K
+			0.1,	// r
+			0.1,	// sig
+			0.02	// b
+		);
+
+	std::cout << "Computed Put Price: " << pa_put.price() <<".\n";
+	std::cout << "Test Put Price: " << 3.03106 << ".\n";
+	std::cout << "Computed Call Price: " << pa_call.price() << ".\n";
+	std::cout << "Test Call Price: " << 18.5035<< ".\n";
+	std::cout << "------------------------------------\n\n";
+
+	std::cout << "Computing put price for S = 10, 11, ... , 50.\n\n";
+	S0 = 10.0;
+	S1 = 50.0;
+	h = 1.0;
+	prices = MatrixPricer::priceRange(pa_put, S0, S1, h);
+	std::cout << "Prices: ";
+	int cnt_S = 10;
+	for (it = prices.begin(); it != prices.end(); ++it)
+	{
+		std::cout << cnt_S << ": " << *it << "\n";
+		cnt_S++;
+	}
+	std::cout << "\n";
+
+	std::cout << "Computing put prices for grid of S = 1, ..., 10 and K = 1, ..., 10.\n\n";
+	S0 = 1; S1 = 10;						// Upper and lower bounds for S grid
+	double K0 = 1; double K1 = 10;			// Upper and lower bounds for T grid
+	mesh_S = MeshGenerator<double>::MeshGenerator(S0, S1, h);	// Mesh grid for S
+	MeshGenerator<double> meshK(K0, K1, h);						// Mesh grid for K
+	price_matrix =
+		MatrixPricer::priceMatrix(
+			pa_put,
+			mesh_S,
+			mesh_K,
+			MatrixPricer::setSFunctor<PerpetualAmericanPut<double>>(),
+			MatrixPricer::setKFunctor<PerpetualAmericanPut<double>>()
+		);
+	std::cout << "Price Matrix (rows = S, columns = K):\n";
+	for (std::size_t i = 0; i < price_matrix.size(); ++i) {
+		for (std::size_t j = 0; j < price_matrix[i].size(); ++j) {
+			std::cout << price_matrix[i][j] << ", ";
+		}
+		std::cout << "\n";
+	}
 
 
 	return 0;
