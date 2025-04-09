@@ -16,10 +16,13 @@ using namespace std;
 namespace BS // Black Scholes
 {
 	double sig = 0.3;
-	double K = 65.0;
-	double T = 0.25;
+	double K = 100.0;
+	double T = 30.0;
 	double r = 0.08;
-	double D = 0.0; // aka q
+	double D = 0.0;		// aka q
+	double St =  100.0;	// Underlying price to evaluate acc. at
+	double P = 1.24750;	// Underlying put price
+	double C = 92.17570;	// Underlying call price
 
 	double mySigma (double x, double t)
 	{
@@ -67,6 +70,21 @@ namespace BS // Black Scholes
 		return max(K - x, 0.0);
 	}
 
+	double mySt()
+	{
+		return St;
+	}
+
+	double myP()
+	{
+		return P;
+	}
+
+	double myC()
+	{
+		return C;
+	}
+
 }
 
 
@@ -83,9 +101,13 @@ int main()
 	BCR = BS::myBCR;
 	IC = BS::myIC;
 
-	int J = static_cast<int>(5*BS::K); int N = 10000-1; // k = O(h^2) !!!!!!!!!
+	double St = BS::mySt();	// Strike price when given ground truth
+	double P = BS::myP();	// Coresponding put price given in batch
+	double C = BS::myC();	// Corresponding call price given in batch
 
-	double Smax = 5*BS::K;			// Magix
+	int J = static_cast<int>(5*BS::K); int N = 1000000-1; // k = O(h^2) !!!!!!!!!
+
+	double Smax = 3*BS::K;			// Magix
 
 	cout << "start FDM\n";
 	FDMDirector fdir(Smax, BS::T, J, N);
@@ -94,8 +116,20 @@ int main()
 	
 	cout << "Finished\n";
 
-	// Have you Excel installed (ExcelImports.cpp)
-	printOneExcel(fdir.xarr, fdir.current(), string("Value"));
+	// Locate the index in xarr closest to St
+	const std::vector<double>& xarr = fdir.xarr;
+	std::vector<double>::const_iterator it = std::lower_bound(xarr.begin(), xarr.end(), St);
+	size_t index = std::distance(xarr.begin(), it);
+
+	// Retrieve the corresponding value from the solution vector
+	const std::vector<double>& fdmPrices = fdir.current();
+	double fdmPrice = fdmPrices[index];
+
+	// Display results
+	cout << "Underlying Price (St): " << St << "\n";
+	cout << "FDM Put Price: " << fdmPrice << "\n";
+	cout << "True Put Price: " << P << "\n";
+	cout << "|error|: " << fabs(P - fdmPrice) << "\n";
 
 	return 0;
 }
