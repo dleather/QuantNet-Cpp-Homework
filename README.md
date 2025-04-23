@@ -2,7 +2,7 @@
 
 Homework submissions for the course **"C++ Programming for Financial Engineering"** on QuantNet.com, offered by Baruch College.
 
-✅ Completed with **Distinction** (April 2025)  
+✅ Completed with **Distinction** (April 2025)  [PDF of Certificate](quantnet_c++_cert.pdf)
 📘 Author: David Leather
 
 ---
@@ -10,7 +10,7 @@ Homework submissions for the course **"C++ Programming for Financial Engineering
 ## Final Project
 - **Title**: Option Pricing Class Design  
 - **Location**: [View Final Project Directory](Level%209/9.ab/9.ab)  
-- **Full Report**: [View Technical Write-Up](Level%209/9.ab/9.ab/README.md)
+- **Full Report**: [View Technical Write-Up](Level%209/9.ab/readme.pdf)
 
 ---
 
