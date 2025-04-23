@@ -78,9 +78,9 @@ This project deepened my understanding of:
 
 As part of the final Level 9 project, I also explored:
 
-- **Monte Carlo Methods**: Implemented Euler-Maruyama simulations for European option pricing. Analyzed pricing error, standard deviation, and standard error across grid sizes and simulations. Demonstrated convergence behavior and statistical accuracy trade-offs :contentReference[oaicite:0]{index=0}.
-- **Finite Difference Methods (FDM)**: Ran an explicit Euler FDM scheme and compared performance against closed-form prices. Observed stability challenges and suggested alternatives like Crank-Nicholson for long expirations :contentReference[oaicite:1]{index=1}.
-- **Excel Visualizations**: Generated mesh-based pricing curves and visual function comparisons using automated C++-Excel integration :contentReference[oaicite:2]{index=2}.
+- **Monte Carlo Methods**: Implemented Euler-Maruyama simulations for European option pricing. Analyzed pricing error, standard deviation, and standard error across grid sizes and simulations. Demonstrated convergence behavior and statistical accuracy trade-off.
+- **Finite Difference Methods (FDM)**: Ran an explicit Euler FDM scheme and compared performance against closed-form prices. Observed stability challenges and suggested alternatives like Crank-Nicholson for long expirations.
+- **Excel Visualizations**: Generated mesh-based pricing curves and visual function comparisons using automated C++-Excel integration.
 
 📄 Full technical reports:
 - [Monte Carlo Analysis (Part C & D)](Level%209/Level_9_HW_Part_C_D.pdf)
