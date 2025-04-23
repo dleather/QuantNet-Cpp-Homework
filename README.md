@@ -84,5 +84,5 @@ As part of the final Level 9 project, I also explored:
 
 📄 Full technical reports:
 - [Monte Carlo Analysis (Part C & D)](Level%209/Level_9_HW_Part_C_D.pdf)
-- [Excel Visualizations (Part E)](Level%209/9.d/Level_9_HW_Part_E.pdf)
+- [Excel Visualizations (Part E)](Level%209/9.e/Level_9_HW_Part_E.pdf)
 - [Finite Difference Methods (Part F)](Level%209/9.f/Level_9_HW_Part_F.pdf)
