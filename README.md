@@ -83,6 +83,6 @@ As part of the final Level 9 project, I also explored:
 - **Excel Visualizations**: Generated mesh-based pricing curves and visual function comparisons using automated C++-Excel integration :contentReference[oaicite:2]{index=2}.
 
 📄 Full technical reports:
-- [Monte Carlo Analysis (Part C & D)](Level%209/9.c/Level_9_HW_Part_C_D.pdf)
+- [Monte Carlo Analysis (Part C & D)](Level%209/Level_9_HW_Part_C_D.pdf)
 - [Excel Visualizations (Part E)](Level%209/9.d/Level_9_HW_Part_E.pdf)
 - [Finite Difference Methods (Part F)](Level%209/9.f/Level_9_HW_Part_F.pdf)
